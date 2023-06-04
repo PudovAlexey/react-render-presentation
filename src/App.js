@@ -1,4 +1,3 @@
-import logo from "./logo.svg";
 import "./App.css";
 import { Users as SingleExample } from "./rendering-examples/single-component";
 import { Users as SingleExampleMemo } from "./rendering-examples/single-component-memo";
