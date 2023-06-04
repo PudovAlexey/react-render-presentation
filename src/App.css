@@ -2,6 +2,20 @@
   text-align: center;
 }
 
+.App__list {
+ display: flex;
+ justify-content: center;
+ align-items: center;
+ flex-direction: column;
+ height: 100vh; 
+}
+
+.App__box { 
+  width: 60%;
+  margin: 0 auto;
+  padding: 2rem 3rem;
+ }
+
 .App-logo {
   height: 40vmin;
   pointer-events: none;
