@@ -2,10 +2,10 @@ import { useContext, useEffect, useState } from "react";
 import {
   Box,
   Button,
+  Divider,
   List,
   ListItem,
   ListItemButton,
-  Paper,
   Typography,
 } from "@mui/material";
 import { Context } from "./context-example/ContextProvider";
@@ -66,19 +66,18 @@ export function Users() {
           const user = usersByName[userName];
           console.log(userName, "CHANGE USER");
           return (
-            <Box key={userName}>
-              <ListItem
-                secondaryAction={
-                  <ListItemButton onClick={() => changeUser(user.name)}>
-                    CHANGE USER
-                  </ListItemButton>
-                }
-                key={user.name}
-              >
-                <Typography>{user.name}&nbsp;</Typography>
-                <Typography color={"red"}>{user.hair_color}</Typography>
-              </ListItem>
-            </Box>
+            <ListItem
+              key={userName}
+              secondaryAction={
+                <ListItemButton onClick={() => changeUser(user.name)}>
+                  CHANGE USER
+                </ListItemButton>
+              }
+            >
+              <Typography>{user.name}&nbsp;</Typography>
+              <Typography color={"red"}>{user.hair_color}</Typography>
+              <Divider />
+            </ListItem>
           );
         })}
       </List>

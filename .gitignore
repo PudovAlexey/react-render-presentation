@@ -21,3 +21,6 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+CHECKLIST.txt
+stage1.txt
+stage2.txt

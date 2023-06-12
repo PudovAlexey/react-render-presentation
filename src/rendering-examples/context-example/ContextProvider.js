@@ -1,6 +1,22 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { fetchPeople } from "../../utils.js/fetchPeople";
 
+import Leia from "../../avatar/leia-organa.jpg";
+import DartVaider from "../../avatar/Dart Waider.jpg";
+import Luke from "../../avatar/Luke_Skywalker.jpg";
+import CPio from "../../avatar/c-3pio.jpg";
+import Owen from "../../avatar/Owen-lars.jpg";
+import R2D2 from "../../avatar/r2-d2.jpeg";
+
+const imgConfig = {
+  "Luke Skywalker": Luke,
+  "C-3PO 1": CPio,
+  "R2-D2": R2D2,
+  "Darth Vader": DartVaider,
+  "Leia Organa": Leia,
+  "Owen Lars": Owen,
+};
+
 export const Context = createContext({
   userNames: [],
   userDict: {},
@@ -14,14 +30,52 @@ export function ContextProvider({ children }) {
   if (!userNames.length) {
     (async function getPeople() {
       const people = await fetchPeople();
-      const userDict = people.results.reduce((acc, user) => {
+      const indexPeopleNames = people.results.map((user, idx) => ({
+        ...user,
+        name: `${user.name} ${idx}`,
+      }));
+
+      const usersDict = indexPeopleNames.reduce((acc, user) => {
+        const clearName = user.name.replace(/\d/g, "").trim();
+        user.img = imgConfig[clearName];
         acc[user.name] = user;
         return acc;
       }, {});
 
-      setUserNames(people.results.slice(0, 5).map(({ name }) => name));
-      setUserDict(userDict);
+      setUserNames(indexPeopleNames.map(({ name }) => name));
+      setUserDict(usersDict);
     })();
+  }
+
+  function onAddMoreUsers() {
+    let count = 0;
+    const rushPepole = new Array(1000).fill("").reduce((acc, _, index) => {
+      const person = userNames[count]
+        ? { ...userDict[userNames[count]] }
+        : null;
+
+      if (person) {
+        const clearName = person.name.replace(/\d/g, "").trim();
+        count++;
+        person.name = `${clearName} ${index}`;
+        acc.push(person);
+      } else {
+        count = 0;
+      }
+
+      return acc;
+    }, []);
+
+    const usersDict = rushPepole.reduce((acc, user) => {
+      const clearName = user.name.replace(/\d/g, "").trim();
+      user.img = imgConfig[clearName];
+
+      acc[user.name] = user;
+      return acc;
+    }, {});
+
+    setUserNames(rushPepole.map(({ name }) => name));
+    setUserDict(usersDict);
   }
 
   return (
@@ -33,6 +87,7 @@ export function ContextProvider({ children }) {
         setUserDict,
         modifiers,
         setModifiers,
+        onAddMoreUsers,
       }}
     >
       {children}

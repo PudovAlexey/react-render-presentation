@@ -5,7 +5,6 @@ import {
   List,
   ListItem,
   ListItemButton,
-  Paper,
   Typography,
 } from "@mui/material";
 import { useUserDictById, useUserList } from "./ContextProvider";

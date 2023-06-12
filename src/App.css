@@ -1,5 +1,22 @@
 .App {
+  position: relative;
+  background-image: url("./public/background.jpg");
   text-align: center;
+}
+
+.App::after {
+  content: '';
+  position: absolute;
+  background-image: url("./public/icons8-star-wars-1344.png");
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-repeat: no-repeat;
+  background-position: center;
 }
 
 .App__list {
@@ -11,9 +28,10 @@
 }
 
 .App__box { 
-  width: 60%;
-  margin: 0 auto;
   padding: 2rem 3rem;
+  width: 30%;
+  z-index: 5;
+  position: relative;
  }
 
 .App-logo {
@@ -40,6 +58,35 @@
 
 .App-link {
   color: #61dafb;
+}
+
+.paper {
+  padding: 2rem 3rem;
+}
+
+.luke {
+  position: relative;
+  height: fit-content;
+}
+
+.dart-vaider {
+  left: 50px;
+  position: absolute;
+  top: 75px;
+  height: fit-content;
+  z-index: 1000;
+}
+
+.dart-vaider__img {
+  height: 700px;
+
+}
+
+.dart-vaider__sign {
+  position: absolute;
+  bottom: 50px;
+  left: 15%;
+  color: white;
 }
 
 @keyframes App-logo-spin {
