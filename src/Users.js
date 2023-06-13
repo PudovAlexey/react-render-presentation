@@ -1,4 +1,10 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import "./App.css";
 import {
   Avatar,
@@ -49,11 +55,21 @@ export function Users() {
     }
   }
 
-  const onDeleteUser = (userName) => {
+  const onDeleteUser = useCallback((userName) => {
     const exceptUser = userId.filter((name) => name !== userName);
 
     setUserId(exceptUser);
-  };
+  }, []);
+
+  // function onShowDartVaider() {
+  //   setLukeAnswer('Noooo!!!');
+  //   setShowDartVaider(true)
+  // }
+
+  const onShowDartVaider = useCallback(() => {
+    setLukeAnswer("Noooo!!!");
+    setShowDartVaider(true);
+  }, []);
 
   return (
     <Root>
@@ -62,11 +78,19 @@ export function Users() {
           <Typography variant="h3">STAR WARS</Typography>
           <Button onClick={onSort}>SORT</Button>
           <Button onClick={onAddMoreUsers}>Навалить пользователей</Button>
+          <Button onClick={onShowDartVaider}>Показать Дарта Вейдера</Button>
         </Box>
         {lukeAnswer && <Typography>Luke, I am your father</Typography>}
         <List>
           {userId.map((userName) => {
-            return <User key={userName} anchorEl={anchorEl} userName={userName} onDeleteUser={onDeleteUser} />;
+            return (
+              <User
+                key={userName}
+                anchorEl={anchorEl}
+                userName={userName}
+                onDeleteUser={onDeleteUser}
+              />
+            );
           })}
         </List>
         <Popover
@@ -102,7 +126,7 @@ export function Users() {
   );
 }
 
-function User({ userName, onDeleteUser, anchorEl }) {
+const User = React.memo(({ userName, onDeleteUser, anchorEl }) => {
   const { userDict } = useContext(Context);
   const [user, setUser] = useState({});
 
@@ -131,9 +155,7 @@ function User({ userName, onDeleteUser, anchorEl }) {
       <ListItem
         secondaryAction={
           <Box>
-            <Button onClick={changeUserHairColor}>
-              CHANGE USER
-            </Button>
+            <Button onClick={changeUserHairColor}>CHANGE USER</Button>
             <Button onClick={() => onDeleteUser(user.name)}>DELETE USER</Button>
           </Box>
         }
@@ -156,7 +178,7 @@ function User({ userName, onDeleteUser, anchorEl }) {
       <Divider />
     </Box>
   );
-}
+});
 
 const Root = styled(Box)({
   display: "flex",
