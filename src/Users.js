@@ -17,6 +17,7 @@ import {
   ListItemButton,
   Paper,
   Popover,
+  TextField,
   Typography,
 } from "@mui/material";
 import { Context } from "./rendering-examples/context-example/ContextProvider";
@@ -32,6 +33,7 @@ export function Users() {
   const [sortType, setSortType] = useState("asc");
   const [lukeAnswer, setLukeAnswer] = useState(null);
   const [showDartWaider, setShowDartVaider] = useState(false);
+  const [value, setValue] = useState();
 
   useEffect(() => {
     setUserId(userNames);
@@ -61,11 +63,6 @@ export function Users() {
     setUserId(exceptUser);
   }, []);
 
-  // function onShowDartVaider() {
-  //   setLukeAnswer('Noooo!!!');
-  //   setShowDartVaider(true)
-  // }
-
   const onShowDartVaider = useCallback(() => {
     setLukeAnswer("Noooo!!!");
     setShowDartVaider(true);
@@ -79,12 +76,14 @@ export function Users() {
           <Button onClick={onSort}>SORT</Button>
           <Button onClick={onAddMoreUsers}>Навалить пользователей</Button>
           <Button onClick={onShowDartVaider}>Показать Дарта Вейдера</Button>
+          <TextField onChange={(e) => setValue(e.target.value)} value={value}/>
         </Box>
         {lukeAnswer && <Typography>Luke, I am your father</Typography>}
         <List>
           {userId.map((userName) => {
             return (
               <User
+                value={value}
                 key={userName}
                 anchorEl={anchorEl}
                 userName={userName}
@@ -126,9 +125,18 @@ export function Users() {
   );
 }
 
-const User = React.memo(({ userName, onDeleteUser, anchorEl }) => {
+const User = React.memo(({ userName, onDeleteUser, anchorEl, value }) => {
   const { userDict } = useContext(Context);
   const [user, setUser] = useState({});
+
+  useEffect(() => {
+    if (userName === "Luke Skywalker 0" && value) {
+      setUser(prev => ({
+        ...prev,
+        hair_color: value,
+      }));
+    }
+  }, [value, userName])
 
   if (!user.name) {
     const hair_color = setUserHairColor();
@@ -140,6 +148,7 @@ const User = React.memo(({ userName, onDeleteUser, anchorEl }) => {
         });
     return null;
   }
+
 
   const changeUserHairColor = () => {
     const hair_color = setUserHairColor();
