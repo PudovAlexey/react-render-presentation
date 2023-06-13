@@ -21,25 +21,39 @@ import styled from "@emotion/styled";
 
 export function Users() {
   const anchorEl = useRef();
-  const { userNames, userDict, onAddMoreUsers } = useContext(Context);
+  const { userNames, onAddMoreUsers } = useContext(Context);
   const [userId, setUserId] = useState([]);
-  const [usersById, setUsersById] = useState({});
   const [sortType, setSortType] = useState("asc");
   const [lukeAnswer, setLukeAnswer] = useState(null);
   const [showDartWaider, setShowDartVaider] = useState(false);
 
   useEffect(() => {
     setUserId(userNames);
-    setUsersById(userDict);
-  }, [userNames, userDict]);
+  }, [userNames]);
 
-  const addUser = () => {};
+  const addUser = (userName) => {
+    const updateUsersIds = [...userId];
+    updateUsersIds.push(userName);
+    setUserId(updateUsersIds);
+  };
 
-  function onSort() {}
+  function onSort() {
+    if (sortType === "asc") {
+      const sortedIds = [...userId].sort((a, b) => a.localeCompare(b));
+      setUserId(sortedIds);
+      setSortType("desc");
+    } else if (sortType === "desc") {
+      const sortedIds = [...userId].sort((a, b) => b.localeCompare(a));
+      setUserId(sortedIds);
+      setSortType("asc");
+    }
+  }
 
-  const changeUserHairColor = (name) => {};
+  const onDeleteUser = (userName) => {
+    const exceptUser = userId.filter((name) => name !== userName);
 
-  const onDeleteUser = (userName) => {};
+    setUserId(exceptUser);
+  };
 
   return (
     <Root>
@@ -52,40 +66,7 @@ export function Users() {
         {lukeAnswer && <Typography>Luke, I am your father</Typography>}
         <List>
           {userId.map((userName) => {
-            const user = usersById[userName];
-            return (
-              <Box>
-                <ListItem
-                  key={userName}
-                  secondaryAction={
-                    <Box>
-                      <Button onClick={() => changeUserHairColor(user.name)}>
-                        CHANGE USER
-                      </Button>
-                      <Button onClick={() => onDeleteUser(user.name)}>
-                        DELETE USER
-                      </Button>
-                    </Box>
-                  }
-                >
-                  <ListItemAvatar>
-                    <Avatar
-                      ref={(ref) => {
-                        if (userName === "Luke Skywalker 0") {
-                          anchorEl.current = ref;
-                        }
-                      }}
-                      src={user.img}
-                    ></Avatar>
-                  </ListItemAvatar>
-                  <Box>
-                    <Typography>{user.name}</Typography>
-                    <Typography color={"red"}>{user.hair_color}</Typography>
-                  </Box>
-                </ListItem>
-                <Divider />
-              </Box>
-            );
+            return <User key={userName} anchorEl={anchorEl} userName={userName} onDeleteUser={onDeleteUser} />;
           })}
         </List>
         <Popover
@@ -109,7 +90,7 @@ export function Users() {
             <LukeSay variant="h3">{lukeAnswer}</LukeSay>
           </Paper>
         </Popover>
-        <Button onClick={addUser}>ADD USER</Button>
+        <Button onClick={() => addUser("YODA")}>ADD YODA</Button>
       </AppBox>
       {showDartWaider && (
         <DartVaiderBlock>
@@ -118,6 +99,62 @@ export function Users() {
         </DartVaiderBlock>
       )}
     </Root>
+  );
+}
+
+function User({ userName, onDeleteUser, anchorEl }) {
+  const { userDict } = useContext(Context);
+  const [user, setUser] = useState({});
+
+  if (!user.name) {
+    const hair_color = setUserHairColor();
+    userDict[userName]
+      ? setUser(userDict[userName])
+      : setUser({
+          name: userName,
+          hair_color,
+        });
+    return null;
+  }
+
+  const changeUserHairColor = () => {
+    const hair_color = setUserHairColor();
+
+    setUser((prev) => ({
+      ...prev,
+      hair_color,
+    }));
+  };
+
+  return (
+    <Box>
+      <ListItem
+        secondaryAction={
+          <Box>
+            <Button onClick={changeUserHairColor}>
+              CHANGE USER
+            </Button>
+            <Button onClick={() => onDeleteUser(user.name)}>DELETE USER</Button>
+          </Box>
+        }
+      >
+        <ListItemAvatar>
+          <Avatar
+            ref={(ref) => {
+              if (userName === "Luke Skywalker 0") {
+                anchorEl.current = ref;
+              }
+            }}
+            src={user.img}
+          ></Avatar>
+        </ListItemAvatar>
+        <Box>
+          <Typography>{user.name}</Typography>
+          <Typography color={"red"}>{user.hair_color}</Typography>
+        </Box>
+      </ListItem>
+      <Divider />
+    </Box>
   );
 }
 
