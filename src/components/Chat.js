@@ -15,37 +15,41 @@ import {
   ListItemAvatar,
   Paper,
   Popover,
+  TextField,
   Typography,
 } from "@mui/material";
 import background from "../public/background.jpg";
-import { Context } from "../ContextProvider";
+import { Context, imgConfig } from "../ContextProvider";
 import { setUserHairColor } from "../utils.js/setUserHairColor";
 import dartVaider from ".././public/avatar/dart vaider.jpg";
 import luke from ".././public/avatar/luke-skywalker-yelling.jpg";
 import styled from "@emotion/styled";
 import iconSrc from "../public/icons8-star-wars-1344.png";
 
-export function Users() {
+export function Chat() {
   const anchorEl = useRef();
-  const { userNames, userDict, onAddMoreUsers } = useContext(Context);
+  const { userIds, userDict, generateMessages } = useContext(Context);
   const [userId, setUserId] = useState([]);
   const [usersById, setUsersById] = useState({});
   const [sortType, setSortType] = useState("asc");
   const [lukeAnswer, setLukeAnswer] = useState(null);
   const [showDartWaider, setShowDartVaider] = useState(false);
+  const [inputValue, setInputValue] = useState();
 
   useEffect(() => {
-    setUserId(userNames);
+    setUserId(userIds);
     setUsersById(userDict);
-  }, [userNames, userDict]);
+  }, [userIds, userDict]);
 
   const addUser = () => {};
 
   function onSort() {}
 
-  const changeUserHairColor = (name) => {};
+  const onDeleteMessage = (userMessage) => {};
 
-  const onDeleteUser = (userName) => {};
+  const onStartChangeUserMessage = (messageId) => {};
+
+  const changeMessage = (name) => {};
 
   return (
     <Root>
@@ -54,7 +58,7 @@ export function Users() {
           <TitleBlock>
             <StarWarsTitle variant="h2">Персонажи STAR&nbsp;WARS</StarWarsTitle>
             <Button onClick={onSort}>SORT</Button>
-            <Button onClick={onAddMoreUsers}>Навалить пользователей</Button>
+            <Button onClick={generateMessages}>Сгенерить косарь</Button>
           </TitleBlock>
           {lukeAnswer && <Typography>Luke, I am your father</Typography>}
           <List>
@@ -66,28 +70,29 @@ export function Users() {
                     key={userName}
                     secondaryAction={
                       <Box>
-                        <Button variant="contained" color="success"  onClick={() => changeUserHairColor(user.name)}>
+                        <Button
+                          variant="contained"
+                          color="success"
+                          onClick={() => onStartChangeUserMessage(user.name)}
+                        >
                           CHANGE USER
                         </Button>
-                        <Button onClick={() => onDeleteUser(user.name)}>
+                        <Button onClick={() => onDeleteMessage(user.name)}>
                           DELETE USER
                         </Button>
                       </Box>
                     }
                   >
                     <ListItemAvatar>
-                      <Avatar
-                        ref={(ref) => {
-                          if (userName === "Luke Skywalker 0") {
-                            anchorEl.current = ref;
-                          }
-                        }}
-                        src={user.img}
-                      ></Avatar>
+                      <Avatar src={user.img}></Avatar>
                     </ListItemAvatar>
                     <Box>
-                      <Typography>{user.name}</Typography>
-                      <Typography color={"red"}>{user.hair_color}</Typography>
+                      <Typography fontWeight={'bold'}>{user.name}</Typography>
+                      {!user.isMesageEdit ? (
+                        <MessageTypography>{user.message}</MessageTypography>
+                      ) : (
+                        <TextField value={user.message} />
+                      )}
                     </Box>
                   </ListItem>
                   <Divider />
@@ -116,9 +121,19 @@ export function Users() {
               <LukeSay variant="h3">{lukeAnswer}</LukeSay>
             </Paper>
           </Popover>
-          <YodaButton variant="contained" onClick={() => addUser("YODA")}>
-            ADD YODA
-          </YodaButton>
+            <MessageInputBlockWrapper>
+          <MessageInputBlock>
+            <Avatar src={imgConfig["Darth Vader"]}></Avatar>
+            <TextField
+              fullWidth
+              onChange={(e) => setInputValue(e.target.value)}
+              value={inputValue}
+            />
+            <SendButton variant="contained" onClick={() => addUser("YODA")}>
+              SEND
+            </SendButton>
+          </MessageInputBlock>
+          </MessageInputBlockWrapper>
         </AppBox>
       </ContentWrapper>
     </Root>
@@ -143,9 +158,9 @@ const ContentWrapper = styled(Box)({
   right: 0,
 });
 
-const YodaButton = styled(Button)({
+const SendButton = styled(Button)({
   textAlign: "center",
-  width: "100%",
+  width: '10%'
 });
 
 const StarWarsTitle = styled(Typography)({
@@ -164,6 +179,7 @@ const AppBox = styled(Paper)({
   zIndex: 5,
   overflow: "auto",
   height: "100%",
+  position: "relative",
 });
 
 const DartVaiderBlock = styled(Box)({
@@ -191,3 +207,26 @@ const LukeSay = styled(Typography)({
 const LukeImg = styled("img")({
   height: "300px",
 });
+
+const MessageInputBlockWrapper = styled(Paper)({
+  position: "fixed",
+  bottom: "10px",
+  right: '6%',
+  width: "85%",
+  backgroundColor: '#505050'
+});
+
+const MessageInputBlock = styled(Box)({
+  padding: "10px 5%",
+  gap: "10px",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  zIndex: 5,
+  width: "85%",
+});
+
+
+const MessageTypography = styled(Typography)({
+  maxWidth: '50%'
+})

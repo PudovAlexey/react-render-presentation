@@ -3,7 +3,7 @@ import { StarWarsIntro } from "./components/StarWarsIntro";
 import { Route, Routes } from "react-router";
 import { Start } from "./components/Start";
 import { ContextProvider } from "./ContextProvider";
-import { Users } from "./components/Users";
+import { Chat } from "./components/Chat";
 
 function App() {
   return (
@@ -12,7 +12,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Start />}></Route>
           <Route path="/intro" element={<StarWarsIntro />}></Route>
-          <Route path="/list" element={<Users/>}></Route>
+          <Route path="/list" element={<Chat/>}></Route>
         </Routes>
       </ContextProvider>
     </Box>
