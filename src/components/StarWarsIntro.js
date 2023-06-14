@@ -1,7 +1,7 @@
 import { Box, Button, Typography, styled } from "@mui/material";
-import background from "../../public/background.jpg";
-import iconSrc from "../../public/icons8-star-wars-1344.png";
-import audioStarWars from "../../public/audio.mp3";
+import background from "../public/background.jpg";
+import iconSrc from "../public/icons8-star-wars-1344.png";
+import audioStarWars from "../public/audio.mp3";
 import { Link } from "react-router-dom";
 
 export function StarWarsIntro() {
