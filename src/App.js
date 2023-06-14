@@ -1,11 +1,9 @@
-import { Box, Button, Paper } from "@mui/material";
-import "./App.css";
-import { Result } from "./Result";
-import { Users } from "./Users";
-import { ContextProvider } from "./rendering-examples/context-example/ContextProvider";
-import { StarWarsIntro } from "./components/StarWarsIntro/StarWarsIntro";
+import { Box } from "@mui/material";
+import { StarWarsIntro } from "./components/StarWarsIntro";
 import { Route, Routes } from "react-router";
 import { Start } from "./components/Start";
+import { ContextProvider } from "./ContextProvider";
+import { Users } from "./components/Users";
 
 function App() {
   return (
