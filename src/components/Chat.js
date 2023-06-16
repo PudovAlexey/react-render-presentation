@@ -23,26 +23,38 @@ export function Chat() {
     generateMessages,
   } = useContext(Context);
   const [messageIds, setMessageIds] = useState([]);
-  const [messagesById, setMessagesById] = useState({});
   const [inputValue, setInputValue] = useState();
   const [sortMessages, setSortMessages] = useState("asc");
+  const [newMessage, setNewMessage] = useState();
 
   useEffect(() => {
     setMessageIds(initialUserIds);
-    setMessagesById(messagesDict);
   }, [initialUserIds, messagesDict]);
 
-  const sendMessage = () => {};
+  const sendMessage = () => {
+    const cloneIds = [...messageIds];
+    const newId = Math.max(...cloneIds) + 1;
+    cloneIds.push(newId);
+    setMessageIds(cloneIds);
+    setNewMessage({
+      [newId]: {
+        name: "Darth Vader",
+        message: inputValue,
+        isMessageEdit: false,
+        img: imgConfig["Darth Vader"],
+      },
+    });
+  };
 
-  const onSort = () => {};
+  const onSort = () => {
+    sortMessages === "asc" ? setSortMessages("desc") : setSortMessages("asc");
+  };
 
-  const onDeleteMessage = (messageId) => {};
+  const onDeleteMessage = (messageId) => {
+    const exclude = messageIds.filter((id) => id !== messageId);
 
-  const onStartChangeUserMessage = (messageId) => {};
-
-  const changeMessage = (messageId, value) => {};
-
-  const onMessageSave = (messageId) => {};
+    setMessageIds(exclude);
+  };
 
   return (
     <Root>
@@ -58,58 +70,13 @@ export function Chat() {
             {messageIds
               .sort((a, b) => (sortMessages === "asc" ? a - b : b - a))
               .map((id) => {
-                const message = messagesById[id];
                 return (
-                  <Box>
-                    <ListItem
-                      key={id}
-                      secondaryAction={
-                        message.isMessageEdit ? (
-                          <Button
-                            color="success"
-                            variant="contained"
-                            onClick={() => onMessageSave(id)}
-                          >
-                            SAVE
-                          </Button>
-                        ) : (
-                          <Box>
-                            <Button
-                              variant="contained"
-                              color="success"
-                              onClick={() => onStartChangeUserMessage(id)}
-                            >
-                              EDIT MESSAGE
-                            </Button>
-                            <Button onClick={() => onDeleteMessage(id)}>
-                              DELETE MESSAGE
-                            </Button>
-                          </Box>
-                        )
-                      }
-                    >
-                      <ListItemAvatar>
-                        <Avatar src={message.img}></Avatar>
-                      </ListItemAvatar>
-                      <Box>
-                        <Typography fontWeight={"bold"}>
-                          {message.name}
-                        </Typography>
-                        {!message.isMessageEdit ? (
-                          <MessageTypography>
-                            {message.message}
-                          </MessageTypography>
-                        ) : (
-                          <TextField
-                            fullWidth
-                            onChange={(e) => changeMessage(id, e.target.value)}
-                            value={message.message}
-                          />
-                        )}
-                      </Box>
-                    </ListItem>
-                    <Divider />
-                  </Box>
+                  <Message
+                    newMessage={newMessage}
+                    setNewMessage={setNewMessage}
+                    onDeleteMessage={onDeleteMessage}
+                    id={id}
+                  />
                 );
               })}
           </List>
@@ -129,6 +96,90 @@ export function Chat() {
         </AppBox>
       </ContentWrapper>
     </Root>
+  );
+}
+
+function Message({ id, onDeleteMessage, newMessage, setNewMessage }) {
+  const { messagesDict } = useContext(Context);
+
+  const [message, setMessage] = useState();
+  
+    useEffect(() => {
+      if (newMessage?.[id]) {
+        console.log(newMessage?.[id])
+        setMessage(newMessage[id]);
+        setNewMessage(undefined);
+      }
+    }, []);
+
+    if (newMessage) {
+      return null
+    }
+
+  if (!message && messagesDict[id]) {
+    setMessage(messagesDict[id]);
+    return null;
+  }
+
+  const onStartChangeUserMessage = () => {
+    setMessage((prev) => ({ ...prev, isMessageEdit: true }));
+  };
+
+  const changeMessage = (_, value) => {
+    setMessage((prev) => ({ ...prev, message: value }));
+  };
+
+  const onMessageSave = () => {
+    setMessage((prev) => ({ ...prev, isMessageEdit: false }));
+  };
+
+  return (
+    <Box>
+      <ListItem
+        key={id}
+        secondaryAction={
+          message.isMessageEdit ? (
+            <Button
+              color="success"
+              variant="contained"
+              onClick={() => onMessageSave(id)}
+            >
+              SAVE
+            </Button>
+          ) : (
+            <Box>
+              <Button
+                variant="contained"
+                color="success"
+                onClick={() => onStartChangeUserMessage(id)}
+              >
+                EDIT MESSAGE
+              </Button>
+              <Button onClick={() => onDeleteMessage(id)}>
+                DELETE MESSAGE
+              </Button>
+            </Box>
+          )
+        }
+      >
+        <ListItemAvatar>
+          <Avatar src={message.img}></Avatar>
+        </ListItemAvatar>
+        <Box>
+          <Typography fontWeight={"bold"}>{message.name}</Typography>
+          {!message.isMessageEdit ? (
+            <MessageTypography>{message.message}</MessageTypography>
+          ) : (
+            <TextField
+              fullWidth
+              onChange={(e) => changeMessage(id, e.target.value)}
+              value={message.message}
+            />
+          )}
+        </Box>
+      </ListItem>
+      <Divider />
+    </Box>
   );
 }
 
