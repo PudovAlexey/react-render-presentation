@@ -32,11 +32,9 @@ export function Chat() {
     setMessagesById(messagesDict);
   }, [initialUserIds, messagesDict]);
 
-  const sendMessage = () => {
-  };
+  const sendMessage = () => {};
 
-  const onSort = () => {
-  };
+  const onSort = () => {};
 
   const onDeleteMessage = (messageId) => {};
 
@@ -72,13 +70,11 @@ export function Chat() {
                           <Button
                             variant="contained"
                             color="success"
-                            onClick={() =>
-                              onStartChangeUserMessage(message.name)
-                            }
+                            onClick={() => onStartChangeUserMessage(id)}
                           >
                             EDIT MESSAGE
                           </Button>
-                          <Button onClick={() => onDeleteMessage(message.name)}>
+                          <Button onClick={() => onDeleteMessage(id)}>
                             DELETE MESSAGE
                           </Button>
                         </Box>
