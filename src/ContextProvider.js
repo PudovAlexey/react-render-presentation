@@ -16,26 +16,26 @@ export const imgConfig = {
 };
 
 export const Context = createContext({
-  userIds: [],
-  userDict: {},
+  messageIds: [],
+  messagesDict: {},
   modifiers: {},
 });
 export function ContextProvider({ children }) {
-  const [userIds, setUserIds] = useState([]);
-  const [userDict, setUserDict] = useState({});
+  const [messageIds, setmessageIds] = useState([]);
+  const [messagesDict, setmessagesDict] = useState({});
 
-  if (!userIds.length) {
+  if (!messageIds.length) {
     (async function getPeople() {
       const people = await fetchPeople();
-      const userIds = [];
+      const messageIds = [];
       people.results.forEach((user, idx) => {
         if (imgConfig[user.name]) {
-          userIds.push(idx);
+          messageIds.push(idx);
         }
       });
 
       const usersDict = people.results.reduce((acc, user, id) => {
-        if (userIds.includes(id)) {
+        if (messageIds.includes(id)) {
           console.log(id, imgConfig[user.name]);
           user.img = imgConfig[user.name];
           user.message = generateRandomMessageByUserName(user.name);
@@ -45,8 +45,8 @@ export function ContextProvider({ children }) {
         return acc;
       }, {});
 
-      setUserIds(userIds);
-      setUserDict(usersDict);
+      setmessageIds(messageIds);
+      setmessagesDict(usersDict);
     })();
   }
 
@@ -56,9 +56,9 @@ export function ContextProvider({ children }) {
     const usersDict = generateIds.reduce((acc, id) => {
       const randomUserIndex = makeRandomUnit(
         0,
-        Object.keys(userDict).length - 1
+        Object.keys(messagesDict).length - 1
       );
-      const cloneUserValue = { ...Object.values(userDict)[randomUserIndex] };
+      const cloneUserValue = { ...Object.values(messagesDict)[randomUserIndex] };
       cloneUserValue.message = generateRandomMessageByUserName(
         cloneUserValue.name
       );
@@ -66,17 +66,17 @@ export function ContextProvider({ children }) {
       return acc;
     }, {});
 
-    setUserIds(generateIds);
-    setUserDict(usersDict);
+    setmessageIds(generateIds);
+    setmessagesDict(usersDict);
   }
 
   return (
     <Context.Provider
       value={{
-        userIds,
-        setUserIds,
-        userDict,
-        setUserDict,
+        messageIds,
+        setmessageIds,
+        messagesDict,
+        setmessagesDict,
         generateMessages,
       }}
     >

@@ -17,19 +17,26 @@ import styled from "@emotion/styled";
 import iconSrc from "../public/icons8-star-wars-1344.png";
 
 export function Chat() {
-  const { userIds: initialUserIds, userDict, generateMessages } = useContext(Context);
-  const [userIds, setUserIds] = useState([]);
-  const [usersById, setUsersById] = useState({});
+  const {
+    messageIds: initialUserIds,
+    messagesDict,
+    generateMessages,
+  } = useContext(Context);
+  const [messageIds, setMessageIds] = useState([]);
+  const [messagesById, setMessagesById] = useState({});
   const [inputValue, setInputValue] = useState();
+  const [sortMessages, setSortMessages] = useState("asc");
 
   useEffect(() => {
-    setUserIds(initialUserIds);
-    setUsersById(userDict);
-  }, [initialUserIds, userDict]);
+    setMessageIds(initialUserIds);
+    setMessagesById(messagesDict);
+  }, [initialUserIds, messagesDict]);
 
-  const sendMessage = () => {};
+  const sendMessage = () => {
+  };
 
-  const onSort = () => {};
+  const onSort = () => {
+  };
 
   const onDeleteMessage = (messageId) => {};
 
@@ -50,49 +57,57 @@ export function Chat() {
             <Button onClick={generateMessages}>Сгенерить косарь</Button>
           </TitleBlock>
           <List>
-            {userIds.map((id) => {
-              const user = usersById[id];
-              return user.isMessageEdit ? (
-                <Button onClick={() => onMessageSave(id)}>SAVE</Button>
-              ) : (
-                <Box>
-                  <ListItem
-                    key={id}
-                    secondaryAction={
+            {messageIds
+              .sort((a, b) => (sortMessages === "asc" ? a - b : b - a))
+              .map((id) => {
+                const message = messagesById[id];
+                return message.isMessageEdit ? (
+                  <Button onClick={() => onMessageSave(id)}>SAVE</Button>
+                ) : (
+                  <Box>
+                    <ListItem
+                      key={id}
+                      secondaryAction={
+                        <Box>
+                          <Button
+                            variant="contained"
+                            color="success"
+                            onClick={() =>
+                              onStartChangeUserMessage(message.name)
+                            }
+                          >
+                            EDIT MESSAGE
+                          </Button>
+                          <Button onClick={() => onDeleteMessage(message.name)}>
+                            DELETE MESSAGE
+                          </Button>
+                        </Box>
+                      }
+                    >
+                      <ListItemAvatar>
+                        <Avatar src={message.img}></Avatar>
+                      </ListItemAvatar>
                       <Box>
-                        <Button
-                          variant="contained"
-                          color="success"
-                          onClick={() => onStartChangeUserMessage(user.name)}
-                        >
-                          EDIT MESSAGE
-                        </Button>
-                        <Button onClick={() => onDeleteMessage(user.name)}>
-                          DELETE MESSAGE
-                        </Button>
+                        <Typography fontWeight={"bold"}>
+                          {message.name}
+                        </Typography>
+                        {!message.isMesageEdit ? (
+                          <MessageTypography>
+                            {message.message}
+                          </MessageTypography>
+                        ) : (
+                          <TextField
+                            onChange={(e) => changeMessage(id, e.target.value)}
+                            color="#fff"
+                            value={message.message}
+                          />
+                        )}
                       </Box>
-                    }
-                  >
-                    <ListItemAvatar>
-                      <Avatar src={user.img}></Avatar>
-                    </ListItemAvatar>
-                    <Box>
-                      <Typography fontWeight={"bold"}>{user.name}</Typography>
-                      {!user.isMesageEdit ? (
-                        <MessageTypography>{user.message}</MessageTypography>
-                      ) : (
-                        <TextField
-                          onChange={(e) => changeMessage(id, e.target.value)}
-                          color="#fff"
-                          value={user.message}
-                        />
-                      )}
-                    </Box>
-                  </ListItem>
-                  <Divider />
-                </Box>
-              );
-            })}
+                    </ListItem>
+                    <Divider />
+                  </Box>
+                );
+              })}
           </List>
           <MessageInputBlockWrapper>
             <MessageInputBlock>
