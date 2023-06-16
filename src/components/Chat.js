@@ -17,15 +17,15 @@ import styled from "@emotion/styled";
 import iconSrc from "../public/icons8-star-wars-1344.png";
 
 export function Chat() {
-  const { userIds, userDict, generateMessages } = useContext(Context);
-  const [userId, setUserId] = useState([]);
+  const { userIds: initialUserIds, userDict, generateMessages } = useContext(Context);
+  const [userIds, setUserIds] = useState([]);
   const [usersById, setUsersById] = useState({});
   const [inputValue, setInputValue] = useState();
 
   useEffect(() => {
-    setUserId(userIds);
+    setUserIds(initialUserIds);
     setUsersById(userDict);
-  }, [userIds, userDict]);
+  }, [initialUserIds, userDict]);
 
   const sendMessage = () => {};
 
@@ -50,7 +50,7 @@ export function Chat() {
             <Button onClick={generateMessages}>Сгенерить косарь</Button>
           </TitleBlock>
           <List>
-            {userId.map((id) => {
+            {userIds.map((id) => {
               const user = usersById[id];
               return user.isMessageEdit ? (
                 <Button onClick={() => onMessageSave(id)}>SAVE</Button>
