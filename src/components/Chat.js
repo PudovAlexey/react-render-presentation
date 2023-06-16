@@ -32,17 +32,57 @@ export function Chat() {
     setMessagesById(messagesDict);
   }, [initialUserIds, messagesDict]);
 
-  const sendMessage = () => {};
+  const sendMessage = () => {
+    const cloneIds = [...messageIds];
+    const newId = Math.max(...cloneIds) + 1;
+    cloneIds.push(newId);
+    setMessageIds(cloneIds);
+    setMessagesById((prev) => ({
+      ...prev,
+      [newId]: {
+        name: "Darth Vader",
+        message: inputValue,
+        isMessageEdit: false,
+        img: imgConfig["Darth Vader"],
+      },
+    }));
+  };
 
-  const onSort = () => {};
+  const onSort = () => {
+    sortMessages === 'asc' ? setSortMessages('desc') : setSortMessages('asc')
+  };
 
-  const onDeleteMessage = (messageId) => {};
+  const onDeleteMessage = (messageId) => {
+    const exclude = messageIds.filter(id => id !== messageId)
 
-  const onStartChangeUserMessage = (messageId) => {};
+    const cloneMessages = {...messagesById}
 
-  const changeMessage = (messageId, value) => {};
+    delete cloneMessages[messageId]
 
-  const onMessageSave = (messageId) => {};
+    setMessageIds(exclude)
+    setMessagesById(cloneMessages)
+  };
+
+  const onStartChangeUserMessage = (messageId) => {
+    setMessagesById((prev) => ({
+      ...prev,
+      [messageId]: {...prev[messageId], isMessageEdit: true}
+    }))
+  };
+
+  const changeMessage = (messageId, value) => {
+    setMessagesById((prev) => ({
+      ...prev,
+      [messageId]: {...prev[messageId], message: value}
+    }))
+  };
+
+  const onMessageSave = (messageId) => {
+    setMessagesById((prev) => ({
+      ...prev,
+      [messageId]: {...prev[messageId], isMessageEdit: false}
+    }))
+  };
 
   return (
     <Root>
