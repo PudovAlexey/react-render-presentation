@@ -1,10 +1,4 @@
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   Avatar,
   Box,
@@ -14,26 +8,18 @@ import {
   ListItem,
   ListItemAvatar,
   Paper,
-  Popover,
   TextField,
   Typography,
 } from "@mui/material";
 import background from "../public/background.jpg";
 import { Context, imgConfig } from "../ContextProvider";
-import { setUserHairColor } from "../utils.js/setUserHairColor";
-import dartVaider from ".././public/avatar/dart vaider.jpg";
-import luke from ".././public/avatar/luke-skywalker-yelling.jpg";
 import styled from "@emotion/styled";
 import iconSrc from "../public/icons8-star-wars-1344.png";
 
 export function Chat() {
-  const anchorEl = useRef();
   const { userIds, userDict, generateMessages } = useContext(Context);
   const [userId, setUserId] = useState([]);
   const [usersById, setUsersById] = useState({});
-  const [sortType, setSortType] = useState("asc");
-  const [lukeAnswer, setLukeAnswer] = useState(null);
-  const [showDartWaider, setShowDartVaider] = useState(false);
   const [inputValue, setInputValue] = useState();
 
   useEffect(() => {
@@ -41,18 +27,21 @@ export function Chat() {
     setUsersById(userDict);
   }, [userIds, userDict]);
 
-  const addUser = () => {};
+  const sendMessage = () => {};
 
-  function onSort() {}
+  const onSort = () => {};
 
-  const onDeleteMessage = (userMessage) => {};
+  const onDeleteMessage = (messageId) => {};
 
   const onStartChangeUserMessage = (messageId) => {};
 
-  const changeMessage = (name) => {};
+  const changeMessage = (messageId, value) => {};
+
+  const onMessageSave = (messageId) => {};
 
   return (
     <Root>
+      <StarwarsIcon src={iconSrc} />
       <ContentWrapper>
         <AppBox>
           <TitleBlock>
@@ -60,14 +49,15 @@ export function Chat() {
             <Button onClick={onSort}>SORT</Button>
             <Button onClick={generateMessages}>Сгенерить косарь</Button>
           </TitleBlock>
-          {lukeAnswer && <Typography>Luke, I am your father</Typography>}
           <List>
-            {userId.map((userName) => {
-              const user = usersById[userName];
-              return (
+            {userId.map((id) => {
+              const user = usersById[id];
+              return user.isMessageEdit ? (
+                <Button onClick={() => onMessageSave(id)}>SAVE</Button>
+              ) : (
                 <Box>
                   <ListItem
-                    key={userName}
+                    key={id}
                     secondaryAction={
                       <Box>
                         <Button
@@ -75,10 +65,10 @@ export function Chat() {
                           color="success"
                           onClick={() => onStartChangeUserMessage(user.name)}
                         >
-                          CHANGE USER
+                          EDIT MESSAGE
                         </Button>
                         <Button onClick={() => onDeleteMessage(user.name)}>
-                          DELETE USER
+                          DELETE MESSAGE
                         </Button>
                       </Box>
                     }
@@ -87,11 +77,15 @@ export function Chat() {
                       <Avatar src={user.img}></Avatar>
                     </ListItemAvatar>
                     <Box>
-                      <Typography fontWeight={'bold'}>{user.name}</Typography>
+                      <Typography fontWeight={"bold"}>{user.name}</Typography>
                       {!user.isMesageEdit ? (
                         <MessageTypography>{user.message}</MessageTypography>
                       ) : (
-                        <TextField value={user.message} />
+                        <TextField
+                          onChange={(e) => changeMessage(id, e.target.value)}
+                          color="#fff"
+                          value={user.message}
+                        />
                       )}
                     </Box>
                   </ListItem>
@@ -100,39 +94,18 @@ export function Chat() {
               );
             })}
           </List>
-          <Popover
-            anchorOrigin={{
-              vertical: "bottom",
-              horizontal: "left",
-            }}
-            transformOrigin={{
-              vertical: "top",
-              horizontal: "left",
-            }}
-            open={!!lukeAnswer}
-            anchorEl={anchorEl.current}
-            onClick={() => {
-              setLukeAnswer(null);
-              setShowDartVaider(false);
-            }}
-          >
-            <Paper>
-              <LukeImg src={luke} />
-              <LukeSay variant="h3">{lukeAnswer}</LukeSay>
-            </Paper>
-          </Popover>
-            <MessageInputBlockWrapper>
-          <MessageInputBlock>
-            <Avatar src={imgConfig["Darth Vader"]}></Avatar>
-            <TextField
-              fullWidth
-              onChange={(e) => setInputValue(e.target.value)}
-              value={inputValue}
-            />
-            <SendButton variant="contained" onClick={() => addUser("YODA")}>
-              SEND
-            </SendButton>
-          </MessageInputBlock>
+          <MessageInputBlockWrapper>
+            <MessageInputBlock>
+              <Avatar src={imgConfig["Darth Vader"]}></Avatar>
+              <TextField
+                fullWidth
+                onChange={(e) => setInputValue(e.target.value)}
+                value={inputValue}
+              />
+              <SendButton variant="contained" onClick={sendMessage}>
+                SEND
+              </SendButton>
+            </MessageInputBlock>
           </MessageInputBlockWrapper>
         </AppBox>
       </ContentWrapper>
@@ -160,7 +133,7 @@ const ContentWrapper = styled(Box)({
 
 const SendButton = styled(Button)({
   textAlign: "center",
-  width: '10%'
+  width: "10%",
 });
 
 const StarWarsTitle = styled(Typography)({
@@ -182,38 +155,16 @@ const AppBox = styled(Paper)({
   position: "relative",
 });
 
-const DartVaiderBlock = styled(Box)({
-  zIndex: 1000,
-  position: "relative",
-});
-
-const DartVaiderImg = styled("img")({
-  height: "80vh",
-});
-
-const DartVaiderSign = styled(Typography)({
-  position: "absolute",
-  bottom: "50px",
-  left: "15%",
-  color: "white",
-});
-
-const LukeSay = styled(Typography)({
-  position: "absolute",
-  bottom: "50px",
-  color: "white",
-});
-
-const LukeImg = styled("img")({
-  height: "300px",
-});
-
 const MessageInputBlockWrapper = styled(Paper)({
   position: "fixed",
   bottom: "10px",
-  right: '6%',
+  right: "6%",
   width: "85%",
-  backgroundColor: '#505050'
+  backgroundColor: "#505050",
+  width: "50%",
+  left: 0,
+  right: 0,
+  margin: "0 auto",
 });
 
 const MessageInputBlock = styled(Box)({
@@ -226,7 +177,6 @@ const MessageInputBlock = styled(Box)({
   width: "85%",
 });
 
-
 const MessageTypography = styled(Typography)({
-  maxWidth: '50%'
-})
+  maxWidth: "50%",
+});
