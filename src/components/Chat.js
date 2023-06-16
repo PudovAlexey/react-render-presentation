@@ -59,25 +59,33 @@ export function Chat() {
               .sort((a, b) => (sortMessages === "asc" ? a - b : b - a))
               .map((id) => {
                 const message = messagesById[id];
-                return message.isMessageEdit ? (
-                  <Button onClick={() => onMessageSave(id)}>SAVE</Button>
-                ) : (
+                return (
                   <Box>
                     <ListItem
                       key={id}
                       secondaryAction={
-                        <Box>
+                        message.isMessageEdit ? (
                           <Button
-                            variant="contained"
                             color="success"
-                            onClick={() => onStartChangeUserMessage(id)}
+                            variant="contained"
+                            onClick={() => onMessageSave(id)}
                           >
-                            EDIT MESSAGE
+                            SAVE
                           </Button>
-                          <Button onClick={() => onDeleteMessage(id)}>
-                            DELETE MESSAGE
-                          </Button>
-                        </Box>
+                        ) : (
+                          <Box>
+                            <Button
+                              variant="contained"
+                              color="success"
+                              onClick={() => onStartChangeUserMessage(id)}
+                            >
+                              EDIT MESSAGE
+                            </Button>
+                            <Button onClick={() => onDeleteMessage(id)}>
+                              DELETE MESSAGE
+                            </Button>
+                          </Box>
+                        )
                       }
                     >
                       <ListItemAvatar>
@@ -87,14 +95,14 @@ export function Chat() {
                         <Typography fontWeight={"bold"}>
                           {message.name}
                         </Typography>
-                        {!message.isMesageEdit ? (
+                        {!message.isMessageEdit ? (
                           <MessageTypography>
                             {message.message}
                           </MessageTypography>
                         ) : (
                           <TextField
+                            fullWidth
                             onChange={(e) => changeMessage(id, e.target.value)}
-                            color="#fff"
                             value={message.message}
                           />
                         )}
