@@ -25,7 +25,6 @@ export function Chat() {
   const [messageIds, setMessageIds] = useState([]);
   const [inputValue, setInputValue] = useState();
   const [sortMessages, setSortMessages] = useState("asc");
-  const [newMessage, setNewMessage] = useState();
 
   useEffect(() => {
     setMessageIds(initialUserIds);
@@ -36,14 +35,17 @@ export function Chat() {
     const newId = Math.max(...cloneIds) + 1;
     cloneIds.push(newId);
     setMessageIds(cloneIds);
-    setNewMessage({
-      [newId]: {
-        name: "Darth Vader",
-        message: inputValue,
-        isMessageEdit: false,
-        img: imgConfig["Darth Vader"],
-      },
-    });
+  };
+
+  const onCreateMessage = () => {
+    return {
+      name: "Darth Vader",
+      message: inputValue,
+      isMessageEdit: false,
+      img: imgConfig["Darth Vader"],
+    };
+
+    setInputValue("");
   };
 
   const onSort = () => {
@@ -72,8 +74,7 @@ export function Chat() {
               .map((id) => {
                 return (
                   <Message
-                    newMessage={newMessage}
-                    setNewMessage={setNewMessage}
+                    onCreateMessage={onCreateMessage}
                     onDeleteMessage={onDeleteMessage}
                     id={id}
                   />
@@ -99,25 +100,18 @@ export function Chat() {
   );
 }
 
-function Message({ id, onDeleteMessage, newMessage, setNewMessage }) {
+function Message({ id, onDeleteMessage, onCreateMessage }) {
   const { messagesDict } = useContext(Context);
 
   const [message, setMessage] = useState();
-  
-    useEffect(() => {
-      if (newMessage?.[id]) {
-        console.log(newMessage?.[id])
-        setMessage(newMessage[id]);
-        setNewMessage(undefined);
-      }
-    }, []);
-
-    if (newMessage) {
-      return null
-    }
 
   if (!message && messagesDict[id]) {
     setMessage(messagesDict[id]);
+    return null;
+  }
+
+  if (!message) {
+    setMessage(onCreateMessage());
     return null;
   }
 
