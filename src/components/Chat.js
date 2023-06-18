@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
 import {
   Avatar,
   Box,
@@ -25,6 +25,8 @@ export function Chat() {
   const [messageIds, setMessageIds] = useState([]);
   const [inputValue, setInputValue] = useState();
   const [sortMessages, setSortMessages] = useState("asc");
+  const ref = useRef();
+  ref.current = inputValue
 
   useEffect(() => {
     setMessageIds(initialUserIds);
@@ -41,11 +43,10 @@ export function Chat() {
     sortMessages === "asc" ? setSortMessages("desc") : setSortMessages("asc");
   };
 
-  const onDeleteMessage = (messageId) => {
-    const exclude = messageIds.filter((id) => id !== messageId);
+  const onDeleteMessage = useCallback((messageId) => {
 
-    setMessageIds(exclude);
-  };
+    setMessageIds(prev => prev.filter((id) => id !== messageId));
+  }, []);
 
   return (
     <Root>
@@ -63,7 +64,7 @@ export function Chat() {
               .map((id) => {
                 return (
                   <Message
-                    inputValue={inputValue}
+                    inputValue={ref}
                     setInputValue={setInputValue}
                     key={id}
                     onDeleteMessage={onDeleteMessage}
@@ -91,12 +92,7 @@ export function Chat() {
   );
 }
 
-function Message({
-  id,
-  onDeleteMessage,
-  inputValue,
-  setInputValue,
-}) {
+const Message = React.memo(({id, inputValue, setInputValue, onDeleteMessage}) => {
   const { messagesDict } = useContext(Context);
 
   const [message, setMessage] = useState();
@@ -109,7 +105,7 @@ function Message({
   if (!message) {
     const newMessage = {
       name: "Darth Vader",
-      message: inputValue,
+      message: inputValue.current,
       isMessageEdit: false,
       img: imgConfig["Darth Vader"],
     };
@@ -177,7 +173,7 @@ function Message({
       <Divider />
     </Box>
   );
-}
+})
 
 const Root = styled(Box)({
   position: "relative",
