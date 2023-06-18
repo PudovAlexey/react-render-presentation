@@ -18,25 +18,20 @@ import iconSrc from "../public/icons8-star-wars-1344.png";
 
 export function Chat() {
   const {
-    messageIds: initialUserIds,
     messagesDict,
     generateMessages,
   } = useContext(Context);
-  const [messageIds, setMessageIds] = useState([]);
   const [messagesById, setMessagesById] = useState({});
   const [inputValue, setInputValue] = useState();
   const [sortMessages, setSortMessages] = useState("asc");
 
   useEffect(() => {
-    setMessageIds(initialUserIds);
     setMessagesById(messagesDict);
-  }, [initialUserIds, messagesDict]);
+  }, [messagesDict]);
 
   const sendMessage = () => {
-    const cloneIds = [...messageIds];
-    const newId = Math.max(...cloneIds) + 1;
-    cloneIds.push(newId);
-    setMessageIds(cloneIds);
+    const newId = Math.max(...Object.keys(messagesById)) + 1;
+
     setMessagesById((prev) => ({
       ...prev,
       [newId]: {
@@ -46,6 +41,8 @@ export function Chat() {
         img: imgConfig["Darth Vader"],
       },
     }));
+
+    setInputValue('')
   };
 
   const onSort = () => {
@@ -53,13 +50,11 @@ export function Chat() {
   };
 
   const onDeleteMessage = (messageId) => {
-    const exclude = messageIds.filter(id => id !== messageId)
 
     const cloneMessages = {...messagesById}
 
     delete cloneMessages[messageId]
 
-    setMessageIds(exclude)
     setMessagesById(cloneMessages)
   };
 
@@ -95,7 +90,7 @@ export function Chat() {
             <Button onClick={generateMessages}>Сгенерить косарь</Button>
           </TitleBlock>
           <List>
-            {messageIds
+            {Object.keys(messagesById)
               .sort((a, b) => (sortMessages === "asc" ? a - b : b - a))
               .map((id) => {
                 const message = messagesById[id];
