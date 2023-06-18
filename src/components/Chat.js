@@ -37,17 +37,6 @@ export function Chat() {
     setMessageIds(cloneIds);
   };
 
-  const onCreateMessage = () => {
-    return {
-      name: "Darth Vader",
-      message: inputValue,
-      isMessageEdit: false,
-      img: imgConfig["Darth Vader"],
-    };
-
-    setInputValue("");
-  };
-
   const onSort = () => {
     sortMessages === "asc" ? setSortMessages("desc") : setSortMessages("asc");
   };
@@ -74,7 +63,9 @@ export function Chat() {
               .map((id) => {
                 return (
                   <Message
-                    onCreateMessage={onCreateMessage}
+                    inputValue={inputValue}
+                    setInputValue={setInputValue}
+                    key={id}
                     onDeleteMessage={onDeleteMessage}
                     id={id}
                   />
@@ -100,7 +91,12 @@ export function Chat() {
   );
 }
 
-function Message({ id, onDeleteMessage, onCreateMessage }) {
+function Message({
+  id,
+  onDeleteMessage,
+  inputValue,
+  setInputValue,
+}) {
   const { messagesDict } = useContext(Context);
 
   const [message, setMessage] = useState();
@@ -109,9 +105,16 @@ function Message({ id, onDeleteMessage, onCreateMessage }) {
     setMessage(messagesDict[id]);
     return null;
   }
-
+  
   if (!message) {
-    setMessage(onCreateMessage());
+    const newMessage = {
+      name: "Darth Vader",
+      message: inputValue,
+      isMessageEdit: false,
+      img: imgConfig["Darth Vader"],
+    };
+    setMessage(newMessage);
+    setInputValue('')
     return null;
   }
 
@@ -130,7 +133,6 @@ function Message({ id, onDeleteMessage, onCreateMessage }) {
   return (
     <Box>
       <ListItem
-        key={id}
         secondaryAction={
           message.isMessageEdit ? (
             <Button
