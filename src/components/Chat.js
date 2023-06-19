@@ -1,4 +1,10 @@
-import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import {
   Avatar,
   Box,
@@ -25,8 +31,9 @@ export function Chat() {
   const [messageIds, setMessageIds] = useState([]);
   const [inputValue, setInputValue] = useState();
   const [sortMessages, setSortMessages] = useState("asc");
+  const [search, setSearch] = useState("");
   const ref = useRef();
-  ref.current = inputValue
+  ref.current = inputValue;
 
   useEffect(() => {
     setMessageIds(initialUserIds);
@@ -44,8 +51,7 @@ export function Chat() {
   };
 
   const onDeleteMessage = useCallback((messageId) => {
-
-    setMessageIds(prev => prev.filter((id) => id !== messageId));
+    setMessageIds((prev) => prev.filter((id) => id !== messageId));
   }, []);
 
   return (
@@ -57,6 +63,10 @@ export function Chat() {
             <StarWarsTitle variant="h2">Персонажи STAR&nbsp;WARS</StarWarsTitle>
             <Button onClick={onSort}>SORT</Button>
             <Button onClick={generateMessages}>Сгенерить косарь</Button>
+            <TextField
+              onChange={(e) => setSearch(e.target.value)}
+              value={search}
+            />
           </TitleBlock>
           <List>
             {messageIds
@@ -64,6 +74,7 @@ export function Chat() {
               .map((id) => {
                 return (
                   <Message
+                    search={search}
                     inputValue={ref}
                     setInputValue={setInputValue}
                     key={id}
@@ -92,88 +103,109 @@ export function Chat() {
   );
 }
 
-const Message = React.memo(({id, inputValue, setInputValue, onDeleteMessage}) => {
-  const { messagesDict } = useContext(Context);
+const Message = React.memo(
+  ({ id, inputValue, setInputValue, onDeleteMessage, search }) => {
+    const { messagesDict } = useContext(Context);
 
-  const [message, setMessage] = useState();
+    const [message, setMessage] = useState();
 
-  if (!message && messagesDict[id]) {
-    setMessage(messagesDict[id]);
-    return null;
-  }
-  
-  if (!message) {
-    const newMessage = {
-      name: "Darth Vader",
-      message: inputValue.current,
-      isMessageEdit: false,
-      img: imgConfig["Darth Vader"],
+    if (!message && messagesDict[id]) {
+      setMessage(messagesDict[id]);
+      return null;
+    }
+
+    if (!message) {
+      const newMessage = {
+        name: "Darth Vader",
+        message: inputValue.current,
+        isMessageEdit: false,
+        img: imgConfig["Darth Vader"],
+      };
+      setMessage(newMessage);
+      setInputValue("");
+      return null;
+    }
+
+    const onStartChangeUserMessage = () => {
+      setMessage((prev) => ({ ...prev, isMessageEdit: true }));
     };
-    setMessage(newMessage);
-    setInputValue('')
-    return null;
-  }
 
-  const onStartChangeUserMessage = () => {
-    setMessage((prev) => ({ ...prev, isMessageEdit: true }));
-  };
+    const changeMessage = (_, value) => {
+      setMessage((prev) => ({ ...prev, message: value }));
+    };
 
-  const changeMessage = (_, value) => {
-    setMessage((prev) => ({ ...prev, message: value }));
-  };
+    const onMessageSave = () => {
+      setMessage((prev) => ({ ...prev, isMessageEdit: false }));
+    };
 
-  const onMessageSave = () => {
-    setMessage((prev) => ({ ...prev, isMessageEdit: false }));
-  };
+    let searchSubstring = message.name.replace(search, "");
 
-  return (
-    <Box>
-      <ListItem
-        secondaryAction={
-          message.isMessageEdit ? (
-            <Button
-              color="success"
-              variant="contained"
-              onClick={() => onMessageSave(id)}
-            >
-              SAVE
-            </Button>
-          ) : (
-            <Box>
+    if ((search + searchSubstring).length !== message.name.length) {
+      searchSubstring = "";
+    }
+
+    return (
+      <Box>
+        <ListItem
+          secondaryAction={
+            message.isMessageEdit ? (
               <Button
-                variant="contained"
                 color="success"
-                onClick={() => onStartChangeUserMessage(id)}
+                variant="contained"
+                onClick={() => onMessageSave(id)}
               >
-                EDIT MESSAGE
+                SAVE
               </Button>
-              <Button onClick={() => onDeleteMessage(id)}>
-                DELETE MESSAGE
-              </Button>
-            </Box>
-          )
-        }
-      >
-        <ListItemAvatar>
-          <Avatar src={message.img}></Avatar>
-        </ListItemAvatar>
-        <Box>
-          <Typography fontWeight={"bold"}>{message.name}</Typography>
-          {!message.isMessageEdit ? (
-            <MessageTypography>{message.message}</MessageTypography>
-          ) : (
-            <TextField
-              fullWidth
-              onChange={(e) => changeMessage(id, e.target.value)}
-              value={message.message}
-            />
-          )}
-        </Box>
-      </ListItem>
-      <Divider />
-    </Box>
-  );
-})
+            ) : (
+              <Box>
+                <Button
+                  variant="contained"
+                  color="success"
+                  onClick={() => onStartChangeUserMessage(id)}
+                >
+                  EDIT MESSAGE
+                </Button>
+                <Button onClick={() => onDeleteMessage(id)}>
+                  DELETE MESSAGE
+                </Button>
+              </Box>
+            )
+          }
+        >
+          <ListItemAvatar>
+            <Avatar src={message.img}></Avatar>
+          </ListItemAvatar>
+          <Box>
+            {searchSubstring ? (
+              <Typography fontWeight={"bold"}>
+                <span
+                  style={{
+                    color: "yellow",
+                  }}
+                >
+                  {search}
+                </span>
+                <span>{searchSubstring}</span>
+              </Typography>
+            ) : (
+              <Typography fontWeight={'bold'}>{message.name}</Typography>
+            )}
+            {!message.isMessageEdit ? (
+              <MessageTypography>{message.message}</MessageTypography>
+            ) : (
+              <TextField
+                fullWidth
+                onChange={(e) => changeMessage(id, e.target.value)}
+                value={message.message}
+              />
+            )}
+          </Box>
+        </ListItem>
+        <Divider />
+      </Box>
+    );
+  }
+);
 
 const Root = styled(Box)({
   position: "relative",
