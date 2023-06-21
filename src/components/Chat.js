@@ -52,12 +52,12 @@ export function Chat() {
     <Root>
       <StarwarsIcon src={iconSrc} />
       <ContentWrapper>
+        <TitleBlock>
+          <StarWarsTitle variant="h2">Персонажи STAR&nbsp;WARS</StarWarsTitle>
+          <Button onClick={onSort}>SORT</Button>
+          <Button onClick={generateMessages}>Сгенерить косарь</Button>
+        </TitleBlock>
         <AppBox>
-          <TitleBlock>
-            <StarWarsTitle variant="h2">Персонажи STAR&nbsp;WARS</StarWarsTitle>
-            <Button onClick={onSort}>SORT</Button>
-            <Button onClick={generateMessages}>Сгенерить косарь</Button>
-          </TitleBlock>
           <List>
             {messageIds
               .sort((a, b) => (sortMessages === "asc" ? a - b : b - a))
@@ -178,19 +178,20 @@ const Message = React.memo(({id, inputValue, setInputValue, onDeleteMessage}) =>
 const Root = styled(Box)({
   position: "relative",
   height: "100vh",
+  overflow: "hidden",
   width: "100vw",
   backgroundImage: `url(${background})`,
 });
 
-const ContentWrapper = styled(Box)({
+const ContentWrapper = styled(Paper)({
   position: "absolute",
   display: "flex",
-  justifyContent: "space-evenly",
+  flexDirection: "column",
   alignItems: "center",
-  top: "50px",
-  bottom: "50px",
-  left: 0,
-  right: 0,
+  top: "30px",
+  bottom: "120px",
+  left: "50px",
+  right: "50px",
 });
 
 const SendButton = styled(Button)({
@@ -215,16 +216,17 @@ const AppBox = styled(Paper)({
   overflow: "auto",
   height: "100%",
   position: "relative",
+  display: "flex",
+  flexDirection: "column-reverse",
 });
 
 const MessageInputBlockWrapper = styled(Paper)({
   position: "fixed",
   bottom: "10px",
-  right: "6%",
-  width: "85%",
+  right: "0%",
+  width: "94%",
   backgroundColor: "#505050",
-  width: "50%",
-  left: 0,
+  left: '3%',
   right: 0,
   margin: "0 auto",
 });
@@ -236,7 +238,8 @@ const MessageInputBlock = styled(Box)({
   justifyContent: "center",
   alignItems: "center",
   zIndex: 5,
-  width: "85%",
+  right: "0%",
+  width: "90%",
 });
 
 const MessageTypography = styled(Typography)({
