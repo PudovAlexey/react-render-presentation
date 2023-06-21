@@ -94,10 +94,9 @@ export const chatSlice = {
       set(chatSlice.state.sortedMessages, newSortDirection);
     }),
 
-    setSearch: atom(null, (get, set, value) => {
+    setSearch: atom(null, (_, set, value) => {
       set(chatSlice.state.search, value);
     }),
-
     onNameSearch: atom(null, (get, set) => {
         const search = get(chatSlice.state.search);
         const messagesById = get(chatSlice.state.messagesById);
@@ -111,7 +110,9 @@ export const chatSlice = {
   
           if (searchSubstring) {
             message.searchSubstring = searchSubstring;
-            set(messagesById[id], message);
+            set(messagesById[id], {...message, searchSubstring, search: search});
+          } else if (message.searchSubstring) {
+            set(messagesById[id], {...message, searchSubstring: undefined, search: undefined});
           }
         });
     }),

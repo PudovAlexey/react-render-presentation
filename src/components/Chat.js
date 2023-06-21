@@ -98,7 +98,6 @@ export function Chat() {
 }
 
 const Message = React.memo(({id}) => {
-  const search = useAtomValue(chatSlice.state.search)
   const message = useAtomValue(useMemo(() => chatSlice.state.getMessageById(id), [id]))
 
   const onStartChangeUserMessage = useSetAtom(chatSlice.actions.onStartChangeUserMessage)
@@ -145,7 +144,7 @@ const Message = React.memo(({id}) => {
                   color: "yellow",
                 }}
               >
-                {search}
+                {message?.search}
               </span>
               <span>{message?.searchSubstring}</span>
             </Typography>
