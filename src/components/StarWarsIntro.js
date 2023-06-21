@@ -56,7 +56,7 @@ export function StarWarsIntro() {
           <StarWarsLink to="/list">Погнали!</StarWarsLink>
         </StarWarsButton>
       </ButtonWrapper>
-      <audio controls autoPlay="autoplay" loop="loop">
+      <audio autoPlay="autoplay" loop="loop">
         <source autoPlay={true} src={audioStarWars} type="audio/mpeg" />
       </audio>
     </Root>
