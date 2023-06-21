@@ -99,21 +99,6 @@ export const chatSlice = {
     }),
 
     onNameSearch: atom(null, (get, set) => {
-        const search = get(chatSlice.state.search);
-        const messagesById = get(chatSlice.state.messagesById);
-        Object.keys(messagesById).forEach((id) => {
-          const message = { ...get(messagesById[id]) };
-          let searchSubstring = message.name.replace(search, "");
-  
-          if (message.name.length === searchSubstring.length) {
-            searchSubstring = "";
-          }
-  
-          if (searchSubstring) {
-            message.searchSubstring = searchSubstring;
-            set(messagesById[id], message);
-          }
-        });
     }),
 
     onExit: atom(null, (_, set) => {
