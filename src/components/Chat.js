@@ -43,7 +43,7 @@ export function Chat() {
       <StarwarsIcon src={iconSrc} />
       <ContentWrapper>
         <TitleBlock>
-          <StarWarsTitle variant="h2">Персонажи STAR&nbsp;WARS</StarWarsTitle>
+          <StarWarsTitle variant="h2">Чат повстанцев</StarWarsTitle>
           <Button onClick={onSort}>SORT</Button>
           <Button onClick={generateMessages}>Сгенерить косарь</Button>
         </TitleBlock>
@@ -107,6 +107,7 @@ export function Chat() {
                 );
               })}
           </List>
+        </AppBox>
           <MessageInputBlockWrapper>
             <MessageInputBlock>
               <Avatar src={imgConfig["Darth Vader"]}></Avatar>
@@ -120,7 +121,6 @@ export function Chat() {
               </SendButton>
             </MessageInputBlock>
           </MessageInputBlockWrapper>
-        </AppBox>
       </ContentWrapper>
     </Root>
   );
@@ -143,6 +143,7 @@ const ContentWrapper = styled(Paper)({
   bottom: "120px",
   left: "50px",
   right: "50px",
+  paddingBottom: '30px'
 });
 
 const SendButton = styled(Button)({
@@ -157,6 +158,7 @@ const StarWarsTitle = styled(Typography)({
 
 const TitleBlock = styled(Box)({
   textAlign: "center",
+  paddingBottom: '50px'
 });
 
 const StarwarsIcon = styled("img")({});
@@ -169,15 +171,15 @@ const AppBox = styled(Paper)({
   position: "relative",
   display: "flex",
   flexDirection: "column-reverse",
+  width: '70%'
 });
 
 const MessageInputBlockWrapper = styled(Paper)({
-  position: "fixed",
-  bottom: "10px",
+  position: "relative",
+  bottom: "-100px",
   right: "0%",
-  width: "94%",
-  backgroundColor: "#505050",
-  left: '3%',
+  width: "100%",
+  left: '0%',
   right: 0,
   margin: "0 auto",
 });
