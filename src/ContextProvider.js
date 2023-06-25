@@ -36,7 +36,6 @@ export function ContextProvider({ children }) {
 
       const usersDict = people.results.reduce((acc, user, id) => {
         if (messageIds.includes(id)) {
-          console.log(id, imgConfig[user.name]);
           user.img = imgConfig[user.name];
           user.message = generateRandomMessageByUserName(user.name);
           user.isMessageEdit = false;
