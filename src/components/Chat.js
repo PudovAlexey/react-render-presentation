@@ -1,4 +1,10 @@
-import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import {
   Avatar,
   Box,
@@ -11,6 +17,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import "../index.css";
 import background from "../public/background.jpg";
 import { Context, imgConfig } from "../ContextProvider";
 import styled from "@emotion/styled";
@@ -25,8 +32,10 @@ export function Chat() {
   const [messageIds, setMessageIds] = useState([]);
   const [inputValue, setInputValue] = useState();
   const [sortMessages, setSortMessages] = useState("asc");
+  const [confirmDelition, setConfirmDelition] = useState();
   const ref = useRef();
-  ref.current = inputValue
+  const selectedIdsRef = useRef([]);
+  ref.current = inputValue;
 
   useEffect(() => {
     setMessageIds(initialUserIds);
@@ -44,9 +53,24 @@ export function Chat() {
   };
 
   const onDeleteMessage = useCallback((messageId) => {
-
-    setMessageIds(prev => prev.filter((id) => id !== messageId));
+    setMessageIds((prev) => prev.filter((id) => id !== messageId));
   }, []);
+
+  const onDeleteSelectedMessages = () => {
+    if (selectedIdsRef.current.length) setConfirmDelition(true);
+  };
+
+  const onConfirmDelition = () => {
+    setMessageIds((prev) =>
+      prev.filter((id) => !selectedIdsRef.current.includes(id))
+    );
+    setConfirmDelition(false);
+    selectedIdsRef.current = [];
+  };
+
+  const onCancelDelition = () => {
+    setConfirmDelition(undefined);
+  };
 
   return (
     <Root>
@@ -56,6 +80,16 @@ export function Chat() {
           <StarWarsTitle variant="h2">Чат повстанцев</StarWarsTitle>
           <Button onClick={onSort}>SORT</Button>
           <Button onClick={generateMessages}>Сгенерить косарь</Button>
+          {confirmDelition ? (
+            <>
+              <Button onClick={onConfirmDelition}>Подтвердить удаление</Button>
+              <Button onClick={onCancelDelition}>Отменить удаление</Button>
+            </>
+          ) : (
+            <Button onClick={onDeleteSelectedMessages}>
+              Удалить выбранные
+            </Button>
+          )}
         </TitleBlock>
         <AppBox>
           <List>
@@ -64,6 +98,9 @@ export function Chat() {
               .map((id) => {
                 return (
                   <Message
+                    setConfirmDelition={setConfirmDelition}
+                    confirmDelition={confirmDelition}
+                    selectedIdsRef={selectedIdsRef}
                     inputValue={ref}
                     setInputValue={setInputValue}
                     key={id}
@@ -74,106 +111,143 @@ export function Chat() {
               })}
           </List>
         </AppBox>
-          <MessageInputBlockWrapper>
-            <MessageInputBlock>
-              <Avatar src={imgConfig["Darth Vader"]}></Avatar>
-              <TextField
-                fullWidth
-                onChange={(e) => setInputValue(e.target.value)}
-                value={inputValue}
-              />
-              <SendButton variant="contained" onClick={sendMessage}>
-                SEND
-              </SendButton>
-            </MessageInputBlock>
-          </MessageInputBlockWrapper>
+        <MessageInputBlockWrapper>
+          <MessageInputBlock>
+            <Avatar src={imgConfig["Darth Vader"]}></Avatar>
+            <TextField
+              fullWidth
+              onChange={(e) => setInputValue(e.target.value)}
+              value={inputValue}
+            />
+            <SendButton variant="contained" onClick={sendMessage}>
+              SEND
+            </SendButton>
+          </MessageInputBlock>
+        </MessageInputBlockWrapper>
       </ContentWrapper>
     </Root>
   );
 }
 
-const Message = React.memo(({id, inputValue, setInputValue, onDeleteMessage}) => {
-  const { messagesDict } = useContext(Context);
+const Message = React.memo(
+  ({
+    id,
+    inputValue,
+    setInputValue,
+    onDeleteMessage,
+    selectedIdsRef,
+    confirmDelition,
+    setConfirmDelition
+  }) => {
+    const { messagesDict } = useContext(Context);
+    const selectedBox = useRef();
+    const [message, setMessage] = useState();
 
-  const [message, setMessage] = useState();
+    if (!message && messagesDict[id]) {
+      setMessage(messagesDict[id]);
+      return null;
+    }
 
-  if (!message && messagesDict[id]) {
-    setMessage(messagesDict[id]);
-    return null;
-  }
-  
-  if (!message) {
-    const newMessage = {
-      name: "Darth Vader",
-      message: inputValue.current,
-      isMessageEdit: false,
-      img: imgConfig["Darth Vader"],
+    if (!message) {
+      const newMessage = {
+        name: "Darth Vader",
+        message: inputValue.current,
+        isMessageEdit: false,
+        img: imgConfig["Darth Vader"],
+      };
+      setMessage(newMessage);
+      setInputValue("");
+      return null;
+    }
+
+    const onStartChangeUserMessage = () => {
+      setMessage((prev) => ({ ...prev, isMessageEdit: true }));
     };
-    setMessage(newMessage);
-    setInputValue('')
-    return null;
-  }
 
-  const onStartChangeUserMessage = () => {
-    setMessage((prev) => ({ ...prev, isMessageEdit: true }));
-  };
+    const changeMessage = (_, value) => {
+      setMessage((prev) => ({ ...prev, message: value }));
+    };
 
-  const changeMessage = (_, value) => {
-    setMessage((prev) => ({ ...prev, message: value }));
-  };
+    const onMessageSave = () => {
+      setMessage((prev) => ({ ...prev, isMessageEdit: false }));
+    };
 
-  const onMessageSave = () => {
-    setMessage((prev) => ({ ...prev, isMessageEdit: false }));
-  };
+    const onSelectMessage = () => {
+      if (confirmDelition) {
+        return;
+      }
 
-  return (
-    <Box>
-      <ListItem
-        secondaryAction={
-          message.isMessageEdit ? (
-            <Button
-              color="success"
-              variant="contained"
-              onClick={() => onMessageSave(id)}
-            >
-              SAVE
-            </Button>
-          ) : (
-            <Box>
-              <Button
-                variant="contained"
-                color="success"
-                onClick={() => onStartChangeUserMessage(id)}
-              >
-                EDIT MESSAGE
-              </Button>
-              <Button onClick={() => onDeleteMessage(id)}>
-                DELETE MESSAGE
-              </Button>
-            </Box>
-          )
-        }
+      message?.isSelected
+        ? (selectedIdsRef.current = selectedIdsRef.current.filter(
+            (messageId) => messageId !== id
+          ))
+        : selectedIdsRef.current.push(id);
+      setMessage((prev) => ({ ...prev, isSelected: !prev?.isSelected }));
+      if (selectedIdsRef.current.length) setConfirmDelition(false);
+    };
+
+    if (selectedIdsRef.current.includes(id) && confirmDelition) {
+      selectedBox.current.style = "animation: .05s infinite alternate shake;";
+    }
+
+    if (confirmDelition === undefined && message?.isSelected) {
+      setMessage((prev) => ({ ...prev, isSelected: false }));
+      selectedBox.current.style = "";
+    }
+
+    return (
+      <Box
+        ref={selectedBox}
+        onClick={onSelectMessage}
+        color={{ background: message?.isSelected && "#08cdcf" }}
       >
-        <ListItemAvatar>
-          <Avatar src={message.img}></Avatar>
-        </ListItemAvatar>
-        <Box>
-          <Typography fontWeight={"bold"}>{message.name}</Typography>
-          {!message.isMessageEdit ? (
-            <MessageTypography>{message.message}</MessageTypography>
-          ) : (
-            <TextField
-              fullWidth
-              onChange={(e) => changeMessage(id, e.target.value)}
-              value={message.message}
-            />
-          )}
-        </Box>
-      </ListItem>
-      <Divider />
-    </Box>
-  );
-})
+        <ListItem
+          secondaryAction={
+            message.isMessageEdit ? (
+              <Button
+                color="success"
+                variant="contained"
+                onClick={() => onMessageSave(id)}
+              >
+                SAVE
+              </Button>
+            ) : (
+              <Box>
+                <Button
+                  variant="contained"
+                  color="success"
+                  onClick={() => onStartChangeUserMessage(id)}
+                >
+                  EDIT MESSAGE
+                </Button>
+                <Button onClick={() => onDeleteMessage(id)}>
+                  DELETE MESSAGE
+                </Button>
+              </Box>
+            )
+          }
+        >
+          <ListItemAvatar>
+            <Avatar src={message.img}></Avatar>
+          </ListItemAvatar>
+          <Box>
+            <Typography fontWeight={"bold"}>{message.name}</Typography>
+            {!message.isMessageEdit ? (
+              <MessageTypography>{message.message}</MessageTypography>
+            ) : (
+              <TextField
+                fullWidth
+                onChange={(e) => changeMessage(id, e.target.value)}
+                value={message.message}
+              />
+            )}
+          </Box>
+        </ListItem>
+        <Divider />
+      </Box>
+    );
+  }
+);
 
 const Root = styled(Box)({
   position: "relative",
@@ -192,7 +266,7 @@ const ContentWrapper = styled(Paper)({
   bottom: "120px",
   left: "50px",
   right: "50px",
-  paddingBottom: '30px'
+  paddingBottom: "30px",
 });
 
 const SendButton = styled(Button)({
@@ -207,7 +281,7 @@ const StarWarsTitle = styled(Typography)({
 
 const TitleBlock = styled(Box)({
   textAlign: "center",
-  paddingBottom: '50px'
+  paddingBottom: "50px",
 });
 
 const StarwarsIcon = styled("img")({});
@@ -220,7 +294,7 @@ const AppBox = styled(Paper)({
   position: "relative",
   display: "flex",
   flexDirection: "column-reverse",
-  width: '70%'
+  width: "70%",
 });
 
 const MessageInputBlockWrapper = styled(Paper)({
@@ -228,7 +302,7 @@ const MessageInputBlockWrapper = styled(Paper)({
   bottom: "-100px",
   right: "0%",
   width: "100%",
-  left: '0%',
+  left: "0%",
   right: 0,
   margin: "0 auto",
 });
