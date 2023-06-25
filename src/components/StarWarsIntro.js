@@ -57,7 +57,7 @@ export function StarWarsIntro() {
       </Intro>
       <ButtonWrapper>
         <StarWarsButton>
-          <StarWarsLink to="/list">Погнали!</StarWarsLink>
+          <StarWarsLink to="/static-intro">Погнали!</StarWarsLink>
         </StarWarsButton>
       </ButtonWrapper>
       <audio autoPlay="autoplay" loop="loop">
