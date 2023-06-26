@@ -50,7 +50,7 @@ export function Chat() {
         <AppBox>
           <List>
             {Object.keys(messagesById)
-              .sort((a, b) => (sortMessages ? a - b : b - a))
+              .sort((a, b) => (!sortMessages ? a - b : b - a))
               .map((id) => {
                 const message = messagesById[id];
                 return (
