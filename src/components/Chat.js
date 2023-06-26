@@ -20,7 +20,7 @@ export function Chat() {
   const { messagesDict, generateMessages } = useContext(Context);
   const [messagesById, setMessagesById] = useState({});
   const [inputValue, setInputValue] = useState();
-  const [sortMessages, setSortMessages] = useState("asc");
+  const [sortMessages, setSortMessages] = useState();
 
   useEffect(() => {
     setMessagesById(messagesDict);
@@ -50,7 +50,7 @@ export function Chat() {
         <AppBox>
           <List>
             {Object.keys(messagesById)
-              .sort((a, b) => (sortMessages === "asc" ? a - b : b - a))
+              .sort((a, b) => (sortMessages ? a - b : b - a))
               .map((id) => {
                 const message = messagesById[id];
                 return (
@@ -108,19 +108,19 @@ export function Chat() {
               })}
           </List>
         </AppBox>
-          <MessageInputBlockWrapper>
-            <MessageInputBlock>
-              <Avatar src={imgConfig["Darth Vader"]}></Avatar>
-              <TextField
-                fullWidth
-                onChange={(e) => setInputValue(e.target.value)}
-                value={inputValue}
-              />
-              <SendButton variant="contained" onClick={sendMessage}>
-                SEND
-              </SendButton>
-            </MessageInputBlock>
-          </MessageInputBlockWrapper>
+        <MessageInputBlockWrapper>
+          <MessageInputBlock>
+            <Avatar src={imgConfig["Darth Vader"]}></Avatar>
+            <TextField
+              fullWidth
+              onChange={(e) => setInputValue(e.target.value)}
+              value={inputValue}
+            />
+            <SendButton variant="contained" onClick={sendMessage}>
+              SEND
+            </SendButton>
+          </MessageInputBlock>
+        </MessageInputBlockWrapper>
       </ContentWrapper>
     </Root>
   );
@@ -143,7 +143,7 @@ const ContentWrapper = styled(Paper)({
   bottom: "120px",
   left: "50px",
   right: "50px",
-  paddingBottom: '30px'
+  paddingBottom: "30px",
 });
 
 const SendButton = styled(Button)({
@@ -158,7 +158,7 @@ const StarWarsTitle = styled(Typography)({
 
 const TitleBlock = styled(Box)({
   textAlign: "center",
-  paddingBottom: '50px'
+  paddingBottom: "50px",
 });
 
 const StarwarsIcon = styled("img")({});
@@ -171,7 +171,7 @@ const AppBox = styled(Paper)({
   position: "relative",
   display: "flex",
   flexDirection: "column-reverse",
-  width: '70%'
+  width: "70%",
 });
 
 const MessageInputBlockWrapper = styled(Paper)({
@@ -179,7 +179,7 @@ const MessageInputBlockWrapper = styled(Paper)({
   bottom: "-100px",
   right: "0%",
   width: "100%",
-  left: '0%',
+  left: "0%",
   right: 0,
   margin: "0 auto",
 });
