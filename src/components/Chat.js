@@ -12,19 +12,33 @@ import {
   Typography,
 } from "@mui/material";
 import background from "../public/background.jpg";
-import { Context, imgConfig } from "../ContextProvider";
 import styled from "@emotion/styled";
 import iconSrc from "../public/icons8-star-wars-1344.png";
+import { fetchMessages, fetchThousandMessages } from "../utils.js/fetchPeople";
+import Leia from ".././public/avatar/leia-organa.jpg";
+import DartVaider from ".././public/avatar/Dart Waider.jpg";
+import Luke from ".././public/avatar/Luke_Skywalker.jpg";
+import Owen from ".././public/avatar/Owen-lars.jpg";
+
+export const imgConfig = {
+  "Luke Skywalker": Luke,
+  "Darth Vader": DartVaider,
+  "Leia Organa": Leia,
+  "Owen Lars": Owen,
+};
 
 export function Chat() {
-  const { messagesDict, generateMessages } = useContext(Context);
   const [messagesById, setMessagesById] = useState({});
   const [inputValue, setInputValue] = useState();
   const [sortMessages, setSortMessages] = useState();
 
   useEffect(() => {
-    setMessagesById(messagesDict);
-  }, [messagesDict]);
+    (async () => {
+      const messages = await fetchThousandMessages();
+
+      setMessagesById(messages);
+    })();
+  }, []);
 
   const sendMessage = () => {
     const newId = +new Date();
@@ -89,7 +103,6 @@ export function Chat() {
         <TitleBlock>
           <StarWarsTitle variant="h2">Чат повстанцев</StarWarsTitle>
           <Button onClick={onSort}>SORT</Button>
-          <Button onClick={generateMessages}>Сгенерить косарь</Button>
         </TitleBlock>
         <AppBox>
           <List>
