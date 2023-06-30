@@ -183,75 +183,76 @@ export function Chat() {
   );
 }
 
-const Root = styled(Box)({
-  position: "relative",
-  height: "100vh",
-  overflow: "hidden",
-  width: "100vw",
-  backgroundImage: `url(${background})`,
-});
+const Root = styled(Box)`
+  position: relative;
+  height: 100vh;
+  overflow: hidden;
+  width: 100vw;
+  background-image: url(${background});
+`;
 
-const ContentWrapper = styled(Paper)({
-  position: "absolute",
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-  top: "30px",
-  bottom: "120px",
-  left: "50px",
-  right: "50px",
-  paddingBottom: "30px",
-});
+const ContentWrapper = styled(Paper)`
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  top: 30px;
+  bottom: 120px;
+  left: 50px;
+  right: 50px;
+  padding-bottom: 30px;
+`;
 
-const SendButton = styled(Button)({
-  textAlign: "center",
-  width: "10%",
-});
+const SendButton = styled(Button)`
+  text-align: center;
+  width: 10%;
+`;
 
-const StarWarsTitle = styled(Typography)({
-  color: "black",
-  textShadow: "-3px 3px 0px #fd0",
-});
+const StarWarsTitle = styled(Typography)`
+  color: black;
+  text-shadow: -3px 3px 0px #fd0;
+`;
 
-const TitleBlock = styled(Box)({
-  textAlign: "center",
-  paddingBottom: "50px",
-});
+const TitleBlock = styled(Box)`
+  text-align: center;
+  padding-bottom: 50px;
+`;
 
-const StarwarsIcon = styled("img")({});
+const StarwarsIcon = styled("img")``;
 
-const AppBox = styled(Paper)({
-  padding: "2rem 3rem",
-  zIndex: 5,
-  overflow: "auto",
-  height: "100%",
-  position: "relative",
-  display: "flex",
-  flexDirection: "column-reverse",
-  width: "70%",
-});
+const AppBox = styled(Paper)`
+  padding: 2rem 3rem;
+  z-index: 5;
+  overflow: auto;
+  height: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: column-reverse;
+  width: 70%;
+`;
 
-const MessageInputBlockWrapper = styled(Paper)({
-  position: "relative",
-  bottom: "-100px",
-  right: "0%",
-  width: "100%",
-  left: "0%",
-  right: 0,
-  margin: "0 auto",
-});
+const MessageInputBlockWrapper = styled(Paper)`
+  position: relative;
+  bottom: -100px;
+  right: 0%;
+  width: 100%;
+  left: 0%;
+  right: 0;
+  margin: 0 auto;
+`;
 
-const MessageInputBlock = styled(Box)({
-  padding: "10px 5%",
-  gap: "10px",
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  zIndex: 5,
-  right: "0%",
-  width: "90%",
-});
+const MessageInputBlock = styled(Box)`
+  padding: 10px 5%;
+  gap: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 5;
+  right: 0%;
+  width: 90%;
+`;
 
-const MessageTypography = styled(Typography)({
-  maxWidth: "50%",
-});
+const MessageTypography = styled(Typography)`
+  max-width: 50%;
+`;
+
