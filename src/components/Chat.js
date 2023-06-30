@@ -19,7 +19,7 @@ import Leia from ".././public/avatar/leia-organa.jpg";
 import DartVaider from ".././public/avatar/Dart Waider.jpg";
 import Luke from ".././public/avatar/Luke_Skywalker.jpg";
 import Owen from ".././public/avatar/Owen-lars.jpg";
-import { useSelector, useDispatch } from "./ContextProvider";
+import { useDispatch, useStoreContext } from "./ContextProvider";
 
 export const imgConfig = {
   "Luke Skywalker": Luke,
@@ -29,7 +29,7 @@ export const imgConfig = {
 };
 
 export function Chat() {
-  const messagesById = useSelector();
+  const messagesById = useStoreContext();
   const dispatch = useDispatch();
   const [inputValue, setInputValue] = useState();
   const [sortMessages, setSortMessages] = useState();
@@ -60,14 +60,8 @@ export function Chat() {
             {Object.keys(messagesById)
               .sort((a, b) => (!sortMessages ? a - b : b - a))
               .map((id) => {
-                const message = messagesById[id];
-                return (
-                  <Message
-                    key={id}
-                    message={message}
-                    id={id}
-                  />
-                );
+                const messageItem = messagesById[id];
+                return <Message key={id} messageItem={messageItem} />;
               })}
           </List>
         </AppBox>
@@ -89,170 +83,166 @@ export function Chat() {
   );
 }
 
-const Message = React.memo(
-  ({
-    id,
-    message,
-  }) => {
-    const dispatch = useDispatch()
+const Message = React.memo(function Message({ messageItem }) {
+  const { id, name, isMessageEdit, img, message } = messageItem;
+  const dispatch = useDispatch();
 
-    const onDeleteMessage = (messageId) => {
-      dispatch({
-        type: "onDeleteMessage",
-        payload: {
-          messageId,
-        },
-      });
-    };
-  
-    const onStartChangeUserMessage = (messageId) => {
-      dispatch({
-        type: "onStartChangeUserMessage",
-        payload: {
-          messageId,
-        },
-      });
-    };
-  
-    const changeMessage = (messageId, value) => {
-      dispatch({
-        type: "changeMessage",
-        payload: {
-          messageId,
-          value,
-        },
-      });
-    };
-  
-    const onMessageSave = (messageId) => {
-      dispatch({
-        type: "onMessageSave",
-        payload: {
-          messageId,
-        },
-      });
-    };
+  const onDeleteMessage = (messageId) => {
+    dispatch({
+      type: "onDeleteMessage",
+      payload: {
+        messageId,
+      },
+    });
+  };
 
-    return (
-      <Box>
-        <ListItem
-          key={id}
-          secondaryAction={
-            message.isMessageEdit ? (
+  const onStartChangeUserMessage = (messageId) => {
+    dispatch({
+      type: "onStartChangeUserMessage",
+      payload: {
+        messageId,
+      },
+    });
+  };
+
+  const changeMessage = (messageId, value) => {
+    dispatch({
+      type: "changeMessage",
+      payload: {
+        messageId,
+        value,
+      },
+    });
+  };
+
+  const onMessageSave = (messageId) => {
+    dispatch({
+      type: "onMessageSave",
+      payload: {
+        messageId,
+      },
+    });
+  };
+
+  return (
+    <Box>
+      <ListItem
+        key={id}
+        secondaryAction={
+          isMessageEdit ? (
+            <Button
+              color="success"
+              variant="contained"
+              onClick={() => onMessageSave(id)}
+            >
+              SAVE
+            </Button>
+          ) : (
+            <Box>
               <Button
-                color="success"
                 variant="contained"
-                onClick={() => onMessageSave(id)}
+                color="success"
+                onClick={() => onStartChangeUserMessage(id)}
               >
-                SAVE
+                EDIT MESSAGE
               </Button>
-            ) : (
-              <Box>
-                <Button
-                  variant="contained"
-                  color="success"
-                  onClick={() => onStartChangeUserMessage(id)}
-                >
-                  EDIT MESSAGE
-                </Button>
-                <Button onClick={() => onDeleteMessage(id)}>
-                  DELETE MESSAGE
-                </Button>
-              </Box>
-            )
-          }
-        >
-          <ListItemAvatar>
-            <Avatar src={message.img}></Avatar>
-          </ListItemAvatar>
-          <Box>
-            <Typography fontWeight={"bold"}>{message.name}</Typography>
-            {!message.isMessageEdit ? (
-              <MessageTypography>{message.message}</MessageTypography>
-            ) : (
-              <TextField
-                fullWidth
-                onChange={(e) => changeMessage(id, e.target.value)}
-                value={message.message}
-              />
-            )}
-          </Box>
-        </ListItem>
-        <Divider />
-      </Box>
-    );
-  }
-);
-
-const Root = styled(Box)({
-  position: "relative",
-  height: "100vh",
-  overflow: "hidden",
-  width: "100vw",
-  backgroundImage: `url(${background})`,
+              <Button onClick={() => onDeleteMessage(id)}>
+                DELETE MESSAGE
+              </Button>
+            </Box>
+          )
+        }
+      >
+        <ListItemAvatar>
+          <Avatar src={img}></Avatar>
+        </ListItemAvatar>
+        <Box>
+          <Typography fontWeight={"bold"}>{name}</Typography>
+          {!isMessageEdit ? (
+            <MessageTypography>{message}</MessageTypography>
+          ) : (
+            <TextField
+              fullWidth
+              onChange={(e) => changeMessage(id, e.target.value)}
+              value={message}
+            />
+          )}
+        </Box>
+      </ListItem>
+      <Divider />
+    </Box>
+  );
 });
 
-const ContentWrapper = styled(Paper)({
-  position: "absolute",
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-  top: "30px",
-  bottom: "120px",
-  left: "50px",
-  right: "50px",
-  paddingBottom: "30px",
-});
+const Root = styled(Box)`
+  position: relative;
+  height: 100vh;
+  overflow: hidden;
+  width: 100vw;
+  background-image: url(${background});
+`;
 
-const SendButton = styled(Button)({
-  textAlign: "center",
-  width: "10%",
-});
+const ContentWrapper = styled(Paper)`
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  top: 30px;
+  bottom: 120px;
+  left: 50px;
+  right: 50px;
+  padding-bottom: 30px;
+`;
 
-const StarWarsTitle = styled(Typography)({
-  color: "black",
-  textShadow: "-3px 3px 0px #fd0",
-});
+const SendButton = styled(Button)`
+  text-align: center;
+  width: 10%;
+`;
 
-const TitleBlock = styled(Box)({
-  textAlign: "center",
-  paddingBottom: "50px",
-});
+const StarWarsTitle = styled(Typography)`
+  color: black;
+  text-shadow: -3px 3px 0px #fd0;
+`;
 
-const StarwarsIcon = styled("img")({});
+const TitleBlock = styled(Box)`
+  text-align: center;
+  padding-bottom: 50px;
+`;
 
-const AppBox = styled(Paper)({
-  padding: "2rem 3rem",
-  zIndex: 5,
-  overflow: "auto",
-  height: "100%",
-  position: "relative",
-  display: "flex",
-  flexDirection: "column-reverse",
-  width: "70%",
-});
+const StarwarsIcon = styled("img")``;
 
-const MessageInputBlockWrapper = styled(Paper)({
-  position: "relative",
-  bottom: "-100px",
-  right: "0%",
-  width: "100%",
-  left: "0%",
-  right: 0,
-  margin: "0 auto",
-});
+const AppBox = styled(Paper)`
+  padding: 2rem 3rem;
+  z-index: 5;
+  overflow: auto;
+  height: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: column-reverse;
+  width: 70%;
+`;
 
-const MessageInputBlock = styled(Box)({
-  padding: "10px 5%",
-  gap: "10px",
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  zIndex: 5,
-  right: "0%",
-  width: "90%",
-});
+const MessageInputBlockWrapper = styled(Paper)`
+  position: relative;
+  bottom: -100px;
+  right: 0%;
+  width: 100%;
+  left: 0%;
+  right: 0;
+  margin: 0 auto;
+`;
 
-const MessageTypography = styled(Typography)({
-  maxWidth: "50%",
-});
+const MessageInputBlock = styled(Box)`
+  padding: 10px 5%;
+  gap: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 5;
+  right: 0%;
+  width: 90%;
+`;
+
+const MessageTypography = styled(Typography)`
+  max-width: 50%;
+`;

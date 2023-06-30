@@ -18,7 +18,10 @@ export async function fetchMessages() {
           user.img = imgConfig[user.name];
           user.message = generateRandomMessageByUserName(user.name);
           user.isMessageEdit = false;
-          acc[id] = user;
+          acc[id] = {
+            ...user,
+            id,
+          };
         }
         return acc;
       }, {});
@@ -44,7 +47,10 @@ export async function fetchThousandMessages() {
           user.img = imgConfig[user.name];
           user.message = generateRandomMessageByUserName(user.name);
           user.isMessageEdit = false;
-          acc[id] = user;
+          acc[id] = {
+            ...user,
+            id,
+          };
         }
         return acc;
       }, {});
@@ -60,7 +66,10 @@ export async function fetchThousandMessages() {
         cloneUserValue.message = generateRandomMessageByUserName(
           cloneUserValue.name
         );
-        acc[id] = cloneUserValue;
+        acc[id] = {
+          ...cloneUserValue,
+          id,
+        };
         return acc;
       }, {});
 

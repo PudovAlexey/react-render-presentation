@@ -1,4 +1,10 @@
-import { createContext, useContext, useEffect, useMemo, useReducer } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useReducer,
+} from "react";
 import { imgConfig } from "./Chat";
 import { fetchThousandMessages } from "../utils.js/fetchPeople";
 
@@ -6,19 +12,12 @@ const StoreContext = createContext();
 const DispatchContext = createContext();
 
 export function ContextProvider({ children }) {
-  const [state, dispatch] = useReducer(reduser, {});
+  const [state, dispatch] = useReducer(reducer, {});
 
   useEffect(() => {
-    (async () => {
-      const messages = await fetchThousandMessages();
-
-      dispatch({
-        type: "fetchMessages",
-        payload: {
-          messages,
-        },
-      });
-    })();
+    fetchThousandMessages().then((messages) => {
+          
+    });
   }, []);
 
   return (
@@ -28,7 +27,7 @@ export function ContextProvider({ children }) {
   );
 }
 
-const reduser = (state, action) => {
+const reducer = (state, action) => {
   const { type, payload } = action;
   switch (type) {
     case "sendMessage":
@@ -79,7 +78,7 @@ const reduser = (state, action) => {
   }
 };
 
-export const useSelector = () => {
+export const useStoreContext = () => {
   return useContext(StoreContext);
 };
 
